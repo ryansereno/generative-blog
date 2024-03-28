@@ -1,0 +1,87 @@
+html,
+body {
+  height: 100vh;
+}
+.bn-container {
+  height: 100%;
+  background-color: #1f1f1f;
+  justify-content: center;
+  display: flex;
+}
+.bn-editor {
+  width: 800px;
+}
+.alert {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  flex-grow: 1;
+  border-radius: 4px;
+  height: 48px;
+  padding: 4px;
+}
+
+.alert[data-alert-type="gpt"] {
+  background-color: #fff6e6;
+}
+
+.alert[data-alert-type="mistral"] {
+  background-color: #ffe6e6;
+}
+
+.alert[data-alert-type="claude"] {
+  background-color: #e6ebff;
+}
+
+.alert[data-alert-type="ollama"] {
+  background-color: #e6ffe6;
+}
+
+[data-color-scheme="dark"] .alert[data-alert-type="gpt"] {
+  background-color: #353742;
+}
+
+[data-color-scheme="dark"] .alert[data-alert-type="mistral"] {
+  background-color: #353742;
+}
+
+[data-color-scheme="dark"] .alert[data-alert-type="claude"] {
+  background-color: #353742;
+}
+
+[data-color-scheme="dark"] .alert[data-alert-type="ollama"] {
+  background-color: #353742;
+}
+
+.alert-icon-wrapper {
+  border-radius: 16px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  margin-left: 12px;
+  margin-right: 12px;
+  height: 18px;
+  width: 18px;
+  user-select: none;
+  cursor: pointer;
+}
+
+.alert-icon[data-alert-icon-type="gpt"] {
+  color: #0cac84;
+}
+
+.alert-icon[data-alert-icon-type="mistral"] {
+  color: #ff4100;
+}
+
+.alert-icon[data-alert-icon-type="claude"] {
+  color: #ff7400;
+}
+
+.alert-icon[data-alert-icon-type="ollama"] {
+  color: white;
+}
+
+.inline-content {
+  flex-grow: 1;
+}
