@@ -15,7 +15,7 @@ import {
 import "@blocknote/react/style.css";
 
 import { HiSparkles } from "react-icons/hi2";
-import { Alert } from "./Alert";
+import { Alert } from "./Assistant";
 
 // Our schema with block specs, which contain the configs and implementations for blocks
 // that we want our editor to use.
@@ -36,17 +36,9 @@ const insertAlert = (editor: typeof schema.BlockNoteEditor) => ({
       type: "alert",
     });
   },
-  aliases: [
-    "alert",
-    "notification",
-    "emphasize",
-    "warning",
-    "error",
-    "info",
-    "success",
-    "generate",
-  ],
-  group: "Other",
+  //search terms
+  aliases: ["ai", "generate", "assistant"],
+  group: "Magic",
   icon: <HiSparkles color="yellow" />,
   subtext: "Generate UI elements",
 });
@@ -68,25 +60,25 @@ export default function App() {
         type: "paragraph",
       },
       {
-        type: "paragraph",
+        type: "alert",
       },
     ],
   });
 
   // Renders the editor instance.
   return (
-      <BlockNoteView editor={editor} slashMenu={false}>
-        {/* Replaces the default Slash Menu. */}
-        <SuggestionMenuController
-          triggerCharacter={"/"}
-          getItems={async (query) =>
-            // Gets all default slash menu items and `insertAlert` item.
-            filterSuggestionItems(
-              [...getDefaultReactSlashMenuItems(editor), insertAlert(editor)],
-              query,
-            )
-          }
-        />
-      </BlockNoteView>
+    <BlockNoteView editor={editor} slashMenu={false}>
+      {/* Replaces the default Slash Menu. */}
+      <SuggestionMenuController
+        triggerCharacter={"/"}
+        getItems={async (query) =>
+          // Gets all default slash menu items and `insertAlert` item.
+          filterSuggestionItems(
+            [...getDefaultReactSlashMenuItems(editor), insertAlert(editor)],
+            query,
+          )
+        }
+      />
+    </BlockNoteView>
   );
 }
