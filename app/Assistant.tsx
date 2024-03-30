@@ -11,6 +11,7 @@ import MistralIcon from "./MistralIcon";
 import OllamaIcon from "./OllamaIcon";
 import { useChat } from "ai/react";
 import { useState } from "react";
+import { BallTriangle } from "react-loader-spinner";
 
 // The types of alerts that users can choose from.
 export const models = [
@@ -56,7 +57,6 @@ export const models = [
   },
 ] as const;
 
-// The Alert block.
 export const Assistant = createReactBlockSpec(
   {
     type: "assistant",
@@ -72,31 +72,28 @@ export const Assistant = createReactBlockSpec(
   },
   {
     render: (props) => {
-      const { messages, input, handleInputChange, handleSubmit } = useChat();
+      const updateBlock = (message) => {
+        props.editor.updateBlock(props.block, {
+          type: "paragraph",
+          content: message.content,
+        });
+      };
+      const { messages, input, handleInputChange, handleSubmit } = useChat({
+        onFinish: updateBlock,
+      });
       const [showForm, setShowForm] = useState(true);
       const onSubmit = async (e) => {
         e.preventDefault();
         await handleSubmit(e);
         setShowForm(false);
-        // Get the response from the messages array
-        const response = "test";
-        console.log(props.contentRef);
-        //Update the current block to a paragraph and pass the response
-        //props.editor.updateBlock(props.block, {
-        //  type: "paragraph",
-        //});
-        // const block = props.editor.getBlock(props.block.id);
-        // console.log(props.editor);
-        // block.content.push({ type: "text", text: "test" });
       };
-
       const model = models.find((a) => a.value === props.block.props.type)!;
       const Icon = model.icon;
       return (
         <div className={"alert"} data-alert-type={props.block.props.type}>
-          {/*Icon which opens a menu to choose the Alert type*/}
           {showForm ? (
             <>
+              {/*Icon which opens a menu to choose the Alert type*/}
               <Menu withinPortal={false} zIndex={999999}>
                 <Menu.Target>
                   <div className={"alert-icon-wrapper"} contentEditable={false}>
@@ -136,10 +133,10 @@ export const Assistant = createReactBlockSpec(
                   })}
                 </Menu.Dropdown>
               </Menu>
-              {/*Rich text field for user to type in*/}
               <form onSubmit={onSubmit} className="w-full">
+                {/*Rich text field for user to type in*/}
                 <input
-                  className="w-full p-2 border border-gray-300 rounded"
+                  className="w-full p-2 border border-gray-300 rounded text-black"
                   value={input}
                   placeholder="What do you need help with?"
                   onChange={handleInputChange}
@@ -147,16 +144,30 @@ export const Assistant = createReactBlockSpec(
               </form>
             </>
           ) : (
-            messages.map((m) => (
-              <div
-                key={m.id}
-                className="whitespace-pre-wrap"
-                ref={props.contentRef}
-              >
-                {m.role === "user" ? "User: " : "AI: "}
-                {m.content}
-              </div>
-            ))
+            <>
+              <BallTriangle
+                height={25}
+                width={25}
+                radius={5}
+                color="lightgray"
+                ariaLabel="ball-triangle-loading"
+                wrapperStyle={{}}
+                wrapperClass=""
+                visible={true}
+              />
+              {messages.map(
+                (m) =>
+                  m.role !== "user" && (
+                    <div
+                      key={m.id}
+                      className="whitespace-pre-wrap"
+                      ref={props.contentRef}
+                    >
+                      {m.content}
+                    </div>
+                  ),
+              )}
+            </>
           )}
         </div>
       );

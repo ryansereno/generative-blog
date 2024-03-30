@@ -56,7 +56,7 @@ export const models = [
 
 // The Assistant component.
 export const AssistantDlg = ({ onClose, onGenerateContent }) => {
-  const { input, handleInputChange, handleSubmit } = useChat();
+  const { input, handleInputChange, handleSubmit, messages } = useChat();
   const [showForm, setShowForm] = useState(true);
   const [selectedModel, setSelectedModel] = useState("mistral");
 
