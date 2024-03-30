@@ -10,6 +10,7 @@ import "./styles.css";
 import MistralIcon from "./MistralIcon";
 import OllamaIcon from "./OllamaIcon";
 import { useChat } from "ai/react";
+import { useState } from "react";
 
 // The types of alerts that users can choose from.
 export const models = [
@@ -56,9 +57,9 @@ export const models = [
 ] as const;
 
 // The Alert block.
-export const Alert = createReactBlockSpec(
+export const Assistant = createReactBlockSpec(
   {
-    type: "alert",
+    type: "assistant",
     propSchema: {
       textAlignment: defaultProps.textAlignment,
       textColor: defaultProps.textColor,
@@ -72,57 +73,91 @@ export const Alert = createReactBlockSpec(
   {
     render: (props) => {
       const { messages, input, handleInputChange, handleSubmit } = useChat();
+      const [showForm, setShowForm] = useState(true);
+      const onSubmit = async (e) => {
+        e.preventDefault();
+        await handleSubmit(e);
+        setShowForm(false);
+        // Get the response from the messages array
+        const response = "test";
+        console.log(props.contentRef);
+        //Update the current block to a paragraph and pass the response
+        //props.editor.updateBlock(props.block, {
+        //  type: "paragraph",
+        //});
+        // const block = props.editor.getBlock(props.block.id);
+        // console.log(props.editor);
+        // block.content.push({ type: "text", text: "test" });
+      };
 
-      const alertType = models.find((a) => a.value === props.block.props.type)!;
-      const Icon = alertType.icon;
+      const model = models.find((a) => a.value === props.block.props.type)!;
+      const Icon = model.icon;
       return (
         <div className={"alert"} data-alert-type={props.block.props.type}>
           {/*Icon which opens a menu to choose the Alert type*/}
-          <Menu withinPortal={false} zIndex={999999}>
-            <Menu.Target>
-              <div className={"alert-icon-wrapper"} contentEditable={false}>
-                <Icon
-                  className={"alert-icon"}
-                  data-alert-icon-type={props.block.props.type}
-                  size={32}
-                />
-              </div>
-            </Menu.Target>
-            {/*Dropdown to change the Alert type*/}
-            <Menu.Dropdown>
-              <Menu.Label>Choose Model</Menu.Label>
-              <Menu.Divider />
-              {models.map((type) => {
-                const ItemIcon = type.icon;
+          {showForm ? (
+            <>
+              <Menu withinPortal={false} zIndex={999999}>
+                <Menu.Target>
+                  <div className={"alert-icon-wrapper"} contentEditable={false}>
+                    <Icon
+                      className={"alert-icon"}
+                      data-alert-icon-type={props.block.props.type}
+                      size={32}
+                    />
+                  </div>
+                </Menu.Target>
+                {/*Dropdown to change the Alert type*/}
+                <Menu.Dropdown>
+                  <Menu.Label>Choose Model</Menu.Label>
+                  <Menu.Divider />
+                  {models.map((type) => {
+                    const ItemIcon = type.icon;
 
-                return (
-                  <Menu.Item
-                    key={type.value}
-                    leftSection={
-                      <ItemIcon className={"alert-icon"} color={type.color} />
-                    }
-                    onClick={() =>
-                      props.editor.updateBlock(props.block, {
-                        type: "alert",
-                        props: { type: type.value },
-                      })
-                    }
-                  >
-                    {type.title}
-                  </Menu.Item>
-                );
-              })}
-            </Menu.Dropdown>
-          </Menu>
-          {/*Rich text field for user to type in*/}
-          <form onSubmit={handleSubmit} className="w-full">
-            <input
-              className="w-full p-2 border border-gray-300 rounded"
-              value={input}
-              placeholder="What do you need help with?"
-              onChange={handleInputChange}
-            />
-          </form>
+                    return (
+                      <Menu.Item
+                        key={type.value}
+                        leftSection={
+                          <ItemIcon
+                            className={"alert-icon"}
+                            color={type.color}
+                          />
+                        }
+                        onClick={() =>
+                          props.editor.updateBlock(props.block, {
+                            type: "assistant",
+                            props: { type: type.value },
+                          })
+                        }
+                      >
+                        {type.title}
+                      </Menu.Item>
+                    );
+                  })}
+                </Menu.Dropdown>
+              </Menu>
+              {/*Rich text field for user to type in*/}
+              <form onSubmit={onSubmit} className="w-full">
+                <input
+                  className="w-full p-2 border border-gray-300 rounded"
+                  value={input}
+                  placeholder="What do you need help with?"
+                  onChange={handleInputChange}
+                />
+              </form>
+            </>
+          ) : (
+            messages.map((m) => (
+              <div
+                key={m.id}
+                className="whitespace-pre-wrap"
+                ref={props.contentRef}
+              >
+                {m.role === "user" ? "User: " : "AI: "}
+                {m.content}
+              </div>
+            ))
+          )}
         </div>
       );
     },

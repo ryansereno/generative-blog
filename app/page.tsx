@@ -15,7 +15,8 @@ import {
 import "@blocknote/react/style.css";
 
 import { HiSparkles } from "react-icons/hi2";
-import { Alert } from "./Assistant";
+import { Assistant } from "./Assistant";
+import { AssistantDlg } from "./AssistantDlg";
 
 // Our schema with block specs, which contain the configs and implementations for blocks
 // that we want our editor to use.
@@ -24,16 +25,16 @@ const schema = BlockNoteSchema.create({
     // Adds all default blocks.
     ...defaultBlockSpecs,
     // Adds the Alert block.
-    alert: Alert,
+    assistant: Assistant,
   },
 });
 
 // Slash menu item to insert an Alert block
-const insertAlert = (editor: typeof schema.BlockNoteEditor) => ({
+const insertAssistant = (editor: typeof schema.BlockNoteEditor) => ({
   title: "Generate UI",
   onItemClick: () => {
     insertOrUpdateBlock(editor, {
-      type: "alert",
+      type: "assistant",
     });
   },
   //search terms
@@ -59,22 +60,20 @@ export default function App() {
       {
         type: "paragraph",
       },
-      {
-        type: "alert",
-      },
     ],
   });
 
   // Renders the editor instance.
   return (
     <BlockNoteView editor={editor} slashMenu={false}>
+    <AssistantDlg />
       {/* Replaces the default Slash Menu. */}
       <SuggestionMenuController
         triggerCharacter={"/"}
         getItems={async (query) =>
-          // Gets all default slash menu items and `insertAlert` item.
+          // Gets all default slash menu items and `insertAssistant` item.
           filterSuggestionItems(
-            [...getDefaultReactSlashMenuItems(editor), insertAlert(editor)],
+            [...getDefaultReactSlashMenuItems(editor), insertAssistant(editor)],
             query,
           )
         }
